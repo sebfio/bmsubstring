@@ -33,9 +33,9 @@ static char *substring (char *pat, char *text) {
 			// Search hit, move fwd right chars for the associated val
 			int offset = pat_len - most_right[text[i]];
 			int curr_sub = i + offset - 1;
-			int start_sub = i - offset;
+			int start_sub = curr_sub - pat_len + 1;
 			for (; curr_sub >= start_sub; curr_sub--) {
-				if (text[curr_sub] == pat[curr_sub - i]) {
+				if (text[curr_sub] == pat[curr_sub - start_sub]) {
 					continue;
 				} else {
 					// Not a hit
