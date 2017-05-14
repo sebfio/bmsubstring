@@ -6,7 +6,9 @@
 
 /*	Author: Sebastian Fiorini */
 
+#include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #define ASCII_LEN 127
 #define SEARCH_MISS -1
@@ -16,18 +18,20 @@ static char *substring (char *pat, char *text) {
 	int pat_len = strlen(pat);
 	int text_len = strlen(text);
 	
-	int most_right[ASCII_LEN] = { SEARCH_MISS};
+	int most_right[ASCII_LEN];
+	for (int i = 0; i < ASCII_LEN; i++)
+		most_right[i] = -1;
 
 	for (int i = 0; i < pat_len; i++)
 		most_right[(unsigned int)pat[i]] = i;
 
 	int skip = 0;
-	for (int i = pat_len - 1; i < text_len; skip) {
-		if (right[text[i]] == SEARCH_MISS) {
+	for (int i = pat_len - 1; i < text_len; i += skip) {
+		if (most_right[text[i]] == SEARCH_MISS) {
 			skip = pat_len;
 		} else {
 			// Search hit, move fwd right chars for the associated val
-			int offset = pat_len - right[text[i]];
+			int offset = pat_len - most_right[text[i]];
 			int curr_sub = i + offset - 1;
 			int start_sub = i - offset;
 			for (; curr_sub >= start_sub; curr_sub--) {
@@ -40,13 +44,18 @@ static char *substring (char *pat, char *text) {
 				}
 			}
 			if (curr_sub <= start_sub)
-				return text[start_sub];
+				return &(text[start_sub]);
 		}
 	}
 	
 	return NULL;
 }
 
-int main (int argc, char ** args) {
-
+int main (int argc, char ** argv) {
+	if (argc == 3) {
+		char *sub = substring(argv[1], argv[2]);
+		if (sub)
+			printf("%s", sub);
+	}
+	return 0;
 }
